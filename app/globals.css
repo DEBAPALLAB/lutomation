@@ -1,26 +1,101 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f4f4eb;
+  --foreground: #1c1c1c;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --font-sans: var(--font-outfit);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: #f4f4eb;
+  color: #1c1c1c;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Sleek organic scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f4f4eb;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(28, 28, 28, 0.12);
+  border-radius: 9999px;
+  border: 1px solid #f4f4eb;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(28, 28, 28, 0.24);
+}
+
+/* Cream Dashboard Design Utilities */
+.organic-card {
+  background: #ffffff;
+  border: 1px solid rgba(28, 28, 28, 0.04);
+  border-radius: 28px;
+  box-shadow: 0 10px 40px rgba(28, 28, 28, 0.015);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.organic-card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 50px rgba(28, 28, 28, 0.03);
+  border-color: rgba(28, 28, 28, 0.08);
+}
+
+.pill-active {
+  background-color: #1c1c1c;
+  color: #ffffff;
+}
+
+.pill-inactive {
+  background-color: #ffffff;
+  color: #666660;
+  border: 1px solid rgba(28, 28, 28, 0.06);
+}
+
+.pill-inactive:hover {
+  background-color: #fbfbf6;
+  border-color: rgba(28, 28, 28, 0.12);
+  color: #1c1c1c;
+}
+
+/* Reference metric pills */
+.trend-green {
+  background-color: #e3f8eb;
+  color: #107c41;
+}
+
+.trend-red {
+  background-color: #fde8e8;
+  color: #c81e1e;
+}
+
+.trend-gray {
+  background-color: #f3f4f6;
+  color: #4b5563;
+}
+
+/* Blueprint AI Research Floating Overlay Panel */
+.ai-research-overlay {
+  background: #ffffff;
+  border: 1px solid rgba(56, 189, 248, 0.12);
+  box-shadow: 0 30px 70px rgba(28, 28, 28, 0.06), 0 10px 30px rgba(56, 189, 248, 0.05);
+  border-radius: 24px;
+}
+
+/* Dot grid ambient pattern */
+.dot-grid {
+  background-image: radial-gradient(rgba(28, 28, 28, 0.03) 1px, transparent 1px);
+  background-size: 20px 20px;
 }

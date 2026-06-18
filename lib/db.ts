@@ -18,3 +18,4 @@ export const db = globalForDb.db || createClient({ url: dbUrl, authToken });
 if (process.env.NODE_ENV !== "production") {
   globalForDb.db = db;
 }
+

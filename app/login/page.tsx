@@ -16,39 +16,37 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center bg-slate-950 overflow-hidden text-slate-100 font-sans">
-      {/* Background radial gradients for ambient glow */}
-      <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-violet-600/10 blur-[120px]" />
-      <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] rounded-full bg-indigo-600/10 blur-[120px]" />
+    <div className="relative min-h-screen flex items-center justify-center bg-[#f5f5ee] overflow-hidden text-[#1c1c1c] font-sans">
+      {/* Ambient warm glow blobs */}
+      <div className="absolute top-[-20%] left-[-10%] w-[55%] h-[55%] rounded-full bg-gradient-to-br from-amber-500/8 to-transparent blur-[100px] pointer-events-none" />
+      <div className="absolute bottom-[-20%] right-[-10%] w-[55%] h-[55%] rounded-full bg-gradient-to-tr from-blue-400/6 to-transparent blur-[100px] pointer-events-none" />
 
       <div className="relative z-10 w-full max-w-md px-6 py-12">
         {/* Logo / Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-tr from-violet-600 to-indigo-600 p-0.5 shadow-lg shadow-indigo-500/25 mb-4">
-            <div className="flex items-center justify-center w-full h-full bg-slate-950 rounded-[14px]">
-              <KeyRound className="w-6 h-6 text-violet-400" />
-            </div>
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-[#1c1c1c] p-0.5 shadow-lg shadow-black/5 mb-4">
+            <KeyRound className="w-6 h-6 text-white" />
           </div>
-          <h1 className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-violet-200 via-indigo-200 to-indigo-400 bg-clip-text text-transparent">
-            LeadFinder Dashboard
+          <h1 className="text-3xl font-extrabold tracking-tight text-[#1c1c1c]">
+            LeadFinder Console
           </h1>
-          <p className="text-slate-400 mt-2 text-sm font-medium">
-            Internal team access for OpenStreetMap Edition
+          <p className="text-slate-500 mt-2 text-sm font-bold uppercase tracking-wider">
+            OSM Lead Extraction System
           </p>
         </div>
 
         {/* Login Card */}
-        <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 rounded-3xl p-8 shadow-2xl shadow-slate-950/50">
-          <h2 className="text-xl font-bold text-slate-200 mb-6">Sign In</h2>
+        <div className="organic-card p-8 shadow-sm bg-white border border-black/[0.04]">
+          <h2 className="text-xl font-extrabold text-[#1c1c1c] mb-6">Sign In</h2>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Email Field */}
             <div>
-              <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
+              <label className="block text-[10px] font-extrabold text-slate-450 uppercase tracking-widest mb-2">
                 Email Address
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
                   <Mail className="w-4 h-4" />
                 </div>
                 <input
@@ -56,18 +54,18 @@ export default function LoginPage() {
                   name="email"
                   required
                   placeholder="name@company.com"
-                  className="w-full bg-slate-950/60 border border-slate-800 rounded-xl py-3 pl-10 pr-4 text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all text-sm"
+                  className="w-full bg-[#fafaf5] border border-black/[0.06] rounded-2xl py-3 pl-10 pr-4 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-black/10 focus:border-black/20 focus:bg-white transition-all text-sm"
                 />
               </div>
             </div>
 
             {/* Password Field */}
             <div>
-              <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
+              <label className="block text-[10px] font-extrabold text-slate-500 uppercase tracking-widest mb-2">
                 Password
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
                   <KeyRound className="w-4 h-4" />
                 </div>
                 <input
@@ -75,14 +73,14 @@ export default function LoginPage() {
                   name="password"
                   required
                   placeholder="••••••••"
-                  className="w-full bg-slate-950/60 border border-slate-800 rounded-xl py-3 pl-10 pr-4 text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all text-sm"
+                  className="w-full bg-[#fafaf5] border border-black/[0.06] rounded-2xl py-3 pl-10 pr-4 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-black/10 focus:border-black/20 focus:bg-white transition-all text-sm"
                 />
               </div>
             </div>
 
             {/* Error Message */}
             {state?.error && (
-              <div className="text-rose-400 text-xs bg-rose-950/30 border border-rose-900/50 rounded-xl p-3 text-center font-medium">
+              <div className="text-rose-600 text-xs bg-rose-50 border border-rose-200 rounded-xl p-3 text-center font-bold">
                 {state.error}
               </div>
             )}
@@ -91,7 +89,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isPending}
-              className="w-full relative group overflow-hidden bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-slate-100 font-semibold py-3 px-4 rounded-xl shadow-lg shadow-indigo-600/20 active:scale-[0.98] transition-all disabled:opacity-50 disabled:pointer-events-none text-sm"
+              className="w-full relative group overflow-hidden bg-[#1c1c1c] hover:bg-[#2c2c2c] text-white font-bold py-3.5 px-4 rounded-2xl shadow-sm active:scale-[0.98] transition-all disabled:opacity-50 disabled:pointer-events-none text-sm cursor-pointer"
             >
               <div className="relative flex items-center justify-center gap-2">
                 {isPending ? (
@@ -111,10 +109,20 @@ export default function LoginPage() {
         </div>
 
         {/* Footer Attribution required by license */}
-        <p className="text-center text-slate-600 mt-8 text-xs font-medium">
-          Business data © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer" className="hover:text-slate-400 underline">OpenStreetMap contributors</a>, ODbL
+        <p className="text-center text-slate-450 mt-8 text-xs font-semibold">
+          Business data ©{" "}
+          <a
+            href="https://www.openstreetmap.org/copyright"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-slate-700 underline transition-colors"
+          >
+            OpenStreetMap contributors
+          </a>
+          , ODbL
         </p>
       </div>
     </div>
   );
 }
+

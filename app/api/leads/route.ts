@@ -3,6 +3,8 @@ import { auth } from "@/auth";
 import { db } from "@/lib/db";
 
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
 
 export async function GET(req: NextRequest) {
   // 1. Session verification (Defense in depth)
