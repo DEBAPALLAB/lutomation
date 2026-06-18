@@ -2,16 +2,29 @@ import { db } from "../lib/db";
 import bcrypt from "bcryptjs";
 
 const teamMembers = [
-  { email: "alex@company.com", name: "Alex" },
-  { email: "blake@company.com", name: "Blake" },
-  { email: "casey@company.com", name: "Casey" },
-  { email: "drew@company.com", name: "Drew" },
-  { email: "jamie@company.com", name: "Jamie" },
-  { email: "taylor@company.com", name: "Taylor" }
+  { email: "dev@company.com", name: "Dev" },
+  { email: "dhruv@company.com", name: "Dhruv" },
+  { email: "soham@company.com", name: "Soham" },
+  { email: "shivam@company.com", name: "Shivam" },
+  { email: "priya@company.com", name: "Priya" },
+  { email: "tanvi@company.com", name: "Tanvi" }
 ];
 
 async function main() {
-  console.log("Generating 6 team member accounts...");
+  console.log("Cleaning up old placeholder accounts (Alex, Blake, etc.) if any...");
+  try {
+    await db.execute({
+      sql: `DELETE FROM users WHERE email IN (
+        'alex@company.com', 'blake@company.com', 'casey@company.com', 
+        'drew@company.com', 'jamie@company.com', 'taylor@company.com'
+      )`,
+      args: []
+    });
+  } catch (err) {
+    console.error("Cleanup error (safe to ignore if first run):", err);
+  }
+
+  console.log("Generating 6 new team member accounts...");
   
   for (const member of teamMembers) {
     // Generate a simple, random, readable temporary password
