@@ -3,7 +3,7 @@ import Credentials from "next-auth/providers/credentials";
 import { authConfig } from "./auth.config";
 import { db } from "./lib/db";
 import bcrypt from "bcryptjs";
-import { headers } from "next/headers";
+
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
@@ -14,7 +14,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials) {
+      async authorize(credentials, req) {
         if (!credentials) return null;
         const email = (credentials.email as string)?.toLowerCase().trim();
         const password = credentials.password as string;
@@ -25,13 +25,20 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         // Get Client IP address for rate-limiting
         let ip = "127.0.0.1";
-        try {
-          const headersList = await headers();
-          ip = headersList.get("x-forwarded-for")?.split(",")[0].trim() || 
-               headersList.get("x-real-ip")?.trim() || 
-               "127.0.0.1";
-        } catch (e) {
-          console.error("Failed to get headers/IP:", e);
+        if (req && req.headers) {
+          try {
+            const forwardedFor = typeof req.headers.get === "function" 
+              ? req.headers.get("x-forwarded-for") 
+              : (req.headers as any)["x-forwarded-for"];
+            
+            const realIp = typeof req.headers.get === "function" 
+              ? req.headers.get("x-real-ip") 
+              : (req.headers as any)["x-real-ip"];
+
+            ip = forwardedFor?.split(",")[0].trim() || realIp?.trim() || "127.0.0.1";
+          } catch (e) {
+            console.error("Failed to get headers/IP from request:", e);
+          }
         }
 
         const now = new Date();
