@@ -1,27 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { db } from "@/lib/db";
-import { geocode, queryOverpass } from "@/lib/osm";
+import { geocode, queryGooglePlaces } from "@/lib/google-places";
 import { generateGridCells } from "@/lib/grid";
-import { getNicheTags } from "@/lib/niche-mapping";
 import { enrichLeadEmail } from "@/lib/enrichment";
 import { MAX_CELLS_PER_SEARCH } from "@/lib/config";
 import { after } from "next/server";
 
 export const runtime = "nodejs";
 
-function getAddress(tags: any): string {
-  if (tags["addr:full"]) return tags["addr:full"];
-  const parts: string[] = [];
-  if (tags["addr:housenumber"]) parts.push(tags["addr:housenumber"]);
-  if (tags["addr:street"]) parts.push(tags["addr:street"]);
-  if (tags["addr:city"]) parts.push(tags["addr:city"]);
-  if (tags["addr:postcode"]) parts.push(tags["addr:postcode"]);
-  return parts.join(", ") || "";
-}
-
 export async function POST(req: NextRequest) {
-  // 1. Session verification (Defense in depth)
   const session = await auth();
   if (!session || !session.user || !session.user.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -63,7 +51,6 @@ export async function POST(req: NextRequest) {
         }
 
         const { lat, lng } = coords;
-        const { tags, isBestEffort } = getNicheTags(niche);
         const allCells = generateGridCells(lat, lng, radiusM);
         const cellsToSearch = allCells.slice(0, MAX_CELLS_PER_SEARCH);
 
@@ -85,24 +72,18 @@ export async function POST(req: NextRequest) {
 
           console.log(`[Job ${jobId}] Processing cell (${cellLat}, ${cellLng}) r=${cellRadius}...`);
 
-          // Check cell cache (freshness limit is 30 days)
-          const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+          // Check cell cache (permanently fresh as per user request)
           const cachedCell = await db.execute({
             sql: `SELECT * FROM search_cells 
                   WHERE niche = ? AND lat = ? AND lng = ? AND radius_m = ?`,
             args: [niche.toLowerCase(), cellLat, cellLng, cellRadius],
           });
 
-          let elements: any[] | null = null;
-          let isCachedFresh = false;
-
           if (cachedCell.rows.length > 0) {
             const row = cachedCell.rows[0];
-            if (row.status === "done" && row.last_searched && row.last_searched > thirtyDaysAgo) {
-              isCachedFresh = true;
-              console.log(`[Job ${jobId}] Cell is fresh in cache. Skipping Overpass query.`);
+            if (row.status === "done") {
+              console.log(`[Job ${jobId}] Cell is permanently cached as done. Skipping Google Places query.`);
               cellsDone++;
-              // Load leads already found in this area if we want, but since they are in DB we just mark cell done.
               await db.execute({
                 sql: `UPDATE scrape_jobs 
                       SET cells_done = ?, cells_failed = ? 
@@ -113,11 +94,11 @@ export async function POST(req: NextRequest) {
             }
           }
 
-          // Fetch from Overpass
-          elements = await queryOverpass(cellLat, cellLng, cellRadius, tags);
+          // Fetch from Google Places API
+          const elements = await queryGooglePlaces(cellLat, cellLng, cellRadius, niche);
 
           if (elements === null) {
-            console.error(`[Job ${jobId}] All Overpass mirrors failed for cell (${cellLat}, ${cellLng})`);
+            console.error(`[Job ${jobId}] Google Places query failed for cell (${cellLat}, ${cellLng})`);
             cellsFailed++;
 
             // Upsert cell with failed status
@@ -149,12 +130,13 @@ export async function POST(req: NextRequest) {
           let cellLeadsCount = 0;
 
           for (const el of elements) {
-            const placeId = `${el.type}/${el.id}`;
-            const name = el.tags?.name || "Unnamed Business";
-            const address = getAddress(el.tags || {});
-            const phone = el.tags?.phone || el.tags?.["contact:phone"] || "";
-            const website = el.tags?.website || el.tags?.["contact:website"] || el.tags?.url || "";
-            const email = el.tags?.email || el.tags?.["contact:email"] || "";
+            const placeId = `google/${el.id}`;
+            const name = el.displayName?.text || "Unnamed Business";
+            const address = el.formattedAddress || "";
+            const phone = el.internationalPhoneNumber || "";
+            const website = el.websiteUri || "";
+            // Google API doesn't provide email directly, we must still scrape it.
+            const email = ""; 
 
             // Check if lead already exists
             const existingLead = await db.execute({
@@ -175,8 +157,8 @@ export async function POST(req: NextRequest) {
                   phone,
                   website,
                   email,
-                  email ? "mailto" : null,
-                  niche.toLowerCase(),
+                  null,
+                  el.primaryType || niche.toLowerCase(),
                   dbNow,
                   dbNow,
                 ],
@@ -184,15 +166,14 @@ export async function POST(req: NextRequest) {
               cellLeadsCount++;
               totalLeadsFound++;
             } else {
-              // Update existing lead name, address, phone, website, email if empty
+              // Update existing lead name, address, phone, website if empty
               const row = existingLead.rows[0];
               const updatedWebsite = website || (row.website as string) || "";
               const updatedEmail = email || (row.email as string) || "";
-              const updatedEmailSource = email ? "mailto" : (row.email_source as string) || null;
 
               await db.execute({
                 sql: `UPDATE leads 
-                      SET name = ?, address = ?, phone = ?, website = ?, email = ?, email_source = ?, last_updated = ? 
+                      SET name = ?, address = ?, phone = ?, website = ?, email = ?, last_updated = ? 
                       WHERE place_id = ?`,
                 args: [
                   name,
@@ -200,7 +181,6 @@ export async function POST(req: NextRequest) {
                   phone,
                   updatedWebsite,
                   updatedEmail,
-                  updatedEmailSource,
                   dbNow,
                   placeId,
                 ],
