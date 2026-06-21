@@ -23,7 +23,7 @@ export default function RootLayout({
       className={`${outfit.variable} antialiased`}
       suppressHydrationWarning
     >
-      <body className="bg-[#f5f5ee] text-[#1c1c1c] min-h-screen flex flex-col overflow-y-auto overflow-x-hidden">
+      <body className="bg-[#09080d] text-[#f8fafc] min-h-screen flex flex-col overflow-y-auto overflow-x-hidden">
         {children}
       </body>
     </html>

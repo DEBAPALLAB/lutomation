@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f4f4eb;
-  --foreground: #1c1c1c;
+  --background: #09080d;
+  --foreground: #f8fafc;
 }
 
 @theme inline {
@@ -12,90 +12,148 @@
 }
 
 body {
-  background-color: #f4f4eb;
-  color: #1c1c1c;
+  background-color: #09080d;
+  color: #f8fafc;
   overflow-y: auto;
   overflow-x: hidden;
 }
 
-/* Sleek organic scrollbar */
+/* Sleek dark scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #f4f4eb;
+  background: #09080d;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(28, 28, 28, 0.12);
+  background: rgba(255, 255, 255, 0.08);
   border-radius: 9999px;
-  border: 1px solid #f4f4eb;
+  border: 1px solid #09080d;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(28, 28, 28, 0.24);
+  background: rgba(255, 255, 255, 0.16);
 }
 
-/* Cream Dashboard Design Utilities */
+/* Premium Dark SaaS Card */
 .organic-card {
-  background: #ffffff;
-  border: 1px solid rgba(28, 28, 28, 0.04);
-  border-radius: 28px;
-  box-shadow: 0 10px 40px rgba(28, 28, 28, 0.015);
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  background: #141318;
+  border: 1px solid #25242a;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .organic-card-hover:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 20px 50px rgba(28, 28, 28, 0.03);
-  border-color: rgba(28, 28, 28, 0.08);
+  transform: translateY(-1px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+  border-color: #38373f;
 }
 
-.pill-active {
-  background-color: #1c1c1c;
-  color: #ffffff;
-}
-
-.pill-inactive {
-  background-color: #ffffff;
-  color: #666660;
-  border: 1px solid rgba(28, 28, 28, 0.06);
-}
-
-.pill-inactive:hover {
-  background-color: #fbfbf6;
-  border-color: rgba(28, 28, 28, 0.12);
-  color: #1c1c1c;
-}
-
-/* Reference metric pills */
+/* Status-dependent styles */
 .trend-green {
-  background-color: #e3f8eb;
-  color: #107c41;
+  background-color: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.15);
 }
 
 .trend-red {
-  background-color: #fde8e8;
-  color: #c81e1e;
+  background-color: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.15);
 }
 
 .trend-gray {
-  background-color: #f3f4f6;
-  color: #4b5563;
+  background-color: rgba(148, 163, 184, 0.1);
+  color: #94a3b8;
+  border: 1px solid rgba(148, 163, 184, 0.15);
 }
 
-/* Blueprint AI Research Floating Overlay Panel */
-.ai-research-overlay {
-  background: #ffffff;
-  border: 1px solid rgba(56, 189, 248, 0.12);
-  box-shadow: 0 30px 70px rgba(28, 28, 28, 0.06), 0 10px 30px rgba(56, 189, 248, 0.05);
-  border-radius: 24px;
-}
-
-/* Dot grid ambient pattern */
+/* Dot grid ambient pattern for dark theme */
 .dot-grid {
-  background-image: radial-gradient(rgba(28, 28, 28, 0.03) 1px, transparent 1px);
+  background-image: radial-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px);
   background-size: 20px 20px;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translate(-50%, 20px);
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, 0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-up {
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fadeInUp {
+  from {
+    transform: translateY(8px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Premium Flowing Background Blobs */
+@keyframes float-blob-1 {
+  0% {
+    transform: translate(0px, 0px) scale(1) rotate(0deg);
+  }
+  33% {
+    transform: translate(120px, 80px) scale(1.15) rotate(120deg);
+  }
+  66% {
+    transform: translate(-40px, 160px) scale(0.9) rotate(240deg);
+  }
+  100% {
+    transform: translate(0px, 0px) scale(1) rotate(360deg);
+  }
+}
+
+@keyframes float-blob-2 {
+  0% {
+    transform: translate(0px, 0px) scale(1) rotate(0deg);
+  }
+  50% {
+    transform: translate(-140px, -70px) scale(1.2) rotate(-180deg);
+  }
+  100% {
+    transform: translate(0px, 0px) scale(1) rotate(-360deg);
+  }
+}
+
+@keyframes float-blob-3 {
+  0% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  50% {
+    transform: translate(90px, -130px) scale(0.85);
+  }
+  100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+}
+
+.blob-1 {
+  animation: float-blob-1 25s infinite alternate ease-in-out;
+}
+.blob-2 {
+  animation: float-blob-2 30s infinite alternate ease-in-out;
+}
+.blob-3 {
+  animation: float-blob-3 20s infinite alternate ease-in-out;
 }

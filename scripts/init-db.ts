@@ -26,7 +26,9 @@ async function main() {
         last_updated_by TEXT REFERENCES users(id),
         first_seen TEXT,
         last_updated TEXT,
-        notes TEXT
+        notes TEXT,
+        priority INTEGER DEFAULT 0,
+        checklist TEXT
     );`,
     `CREATE INDEX IF NOT EXISTS idx_leads_status ON leads(status);`,
     `CREATE INDEX IF NOT EXISTS idx_leads_assigned ON leads(assigned_to);`,
@@ -85,6 +87,13 @@ async function main() {
     `CREATE TABLE IF NOT EXISTS overpass_calls (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         timestamp TEXT
+    );`,
+    `CREATE TABLE IF NOT EXISTS lead_comments (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        place_id TEXT REFERENCES leads(place_id) ON DELETE CASCADE,
+        user_id TEXT REFERENCES users(id),
+        comment TEXT NOT NULL,
+        timestamp TEXT NOT NULL
     );`
   ];
 

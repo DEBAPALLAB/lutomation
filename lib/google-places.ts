@@ -81,7 +81,7 @@ export async function queryGooglePlaces(
 
   const requestBody = {
     textQuery: niche,
-    locationRestriction: {
+    locationBias: {
       circle: {
         center: {
           latitude: lat,
