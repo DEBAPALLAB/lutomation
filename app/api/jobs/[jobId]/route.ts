@@ -26,7 +26,22 @@ export async function GET(
       return NextResponse.json({ error: "Job not found" }, { status: 404 });
     }
 
-    return NextResponse.json(res.rows[0]);
+    const job = res.rows[0];
+
+    // Auto-fail jobs that have been stuck for > 5 minutes due to Vercel timeouts
+    if (job.status === "running" || job.status === "queued") {
+      const createdAt = new Date(job.created_at as string).getTime();
+      const now = Date.now();
+      if (now - createdAt > 5 * 60 * 1000) {
+        await db.execute({
+          sql: "UPDATE scrape_jobs SET status = 'failed' WHERE id = ?",
+          args: [jobId],
+        });
+        job.status = "failed";
+      }
+    }
+
+    return NextResponse.json(job);
   } catch (err) {
     console.error("GET /api/jobs/[jobId] error:", err);
     return NextResponse.json({ error: "Database error" }, { status: 500 });

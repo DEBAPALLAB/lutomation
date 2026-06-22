@@ -297,13 +297,16 @@ export default function DashboardClient({ currentUser }: { currentUser: UserInfo
     setSelectedLeadIds(new Set());
   }, [nicheFilter, assigneeFilter, filterNoWebsite, filterStarredOnly, searchQuery, checkedStatuses, websiteFilter, emailFilter, activeView]);
 
-  // Poll active job progress
+  // Poll active job progress with exponential backoff
   useEffect(() => {
     if (!activeJob || activeJob.status === "done" || activeJob.status === "failed" || activeJob.status === "partial") {
       return;
     }
 
-    const interval = setInterval(async () => {
+    let timeoutId: NodeJS.Timeout;
+    let pollInterval = 2000;
+
+    const poll = async () => {
       try {
         const res = await fetch(`/api/jobs/${activeJob.id}`);
         if (res.ok) {
@@ -311,18 +314,24 @@ export default function DashboardClient({ currentUser }: { currentUser: UserInfo
           setActiveJob(data);
 
           if (data.status === "done" || data.status === "failed" || data.status === "partial") {
-            clearInterval(interval);
             setLoadingSearch(false);
             fetchLeads(); // Refresh leads
+            return; // Stop polling
           }
         }
       } catch (err) {
         console.error("Failed to poll job status:", err);
       }
-    }, 2000);
 
-    return () => clearInterval(interval);
-  }, [activeJob, fetchLeads]);
+      // Exponential backoff, max 10 seconds
+      pollInterval = Math.min(pollInterval * 1.5, 10000);
+      timeoutId = setTimeout(poll, pollInterval);
+    };
+
+    timeoutId = setTimeout(poll, pollInterval);
+
+    return () => clearTimeout(timeoutId);
+  }, [activeJob?.id, fetchLeads]);
 
   // Submit Search form
   const handleSearchSubmit = async (e: React.FormEvent) => {
@@ -1350,8 +1359,14 @@ export default function DashboardClient({ currentUser }: { currentUser: UserInfo
 
                       <div className="space-y-1">
                         <div className="flex justify-between text-[10px] font-bold text-slate-500">
-                          <span>Zones complete: {activeJob.cells_done} / {activeJob.cells_total}</span>
-                          <span>{activeJob.leads_found} leads</span>
+                          <span>
+                            Zones: {activeJob.cells_done} / {activeJob.cells_total}
+                            {activeJob.cells_failed > 0 && ` (${activeJob.cells_failed} failed)`}
+                          </span>
+                          <span>
+                            {activeJob.leads_found} leads 
+                            {activeJob.cells_total > 0 && ` (${((activeJob.cells_done / activeJob.cells_total) * 100).toFixed(0)}%)`}
+                          </span>
                         </div>
 
                         <div className="w-full bg-[#0c0b10] rounded-full h-2 overflow-hidden border border-[#25242a]">
