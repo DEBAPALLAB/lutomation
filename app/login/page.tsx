@@ -36,8 +36,8 @@ export default function LoginPage() {
         </div>
 
         {/* Login Card */}
-        <div className="organic-card p-8 shadow-sm bg-white border border-black/[0.04]">
-          <h2 className="text-xl font-extrabold text-[#1c1c1c] mb-6">Sign In</h2>
+        <div className="bg-white rounded-3xl p-8 shadow-2xl border border-black/[0.04]">
+          <h2 className="text-2xl font-extrabold text-[#1c1c1c] mb-6 text-center">Sign In</h2>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Email Field */}

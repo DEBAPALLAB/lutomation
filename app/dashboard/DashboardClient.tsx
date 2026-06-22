@@ -2198,6 +2198,17 @@ export default function DashboardClient({ currentUser }: { currentUser: UserInfo
                             </td>
                             <td className="py-4 px-6 text-center" onClick={(e) => e.stopPropagation()}>
                               <div className="flex items-center justify-center gap-1">
+                                <button 
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    const query = encodeURIComponent(`${lead.name} ${lead.address ? lead.address : ""}`.trim());
+                                    window.open(`https://www.google.com/search?q=${query}`, "_blank");
+                                  }}
+                                  className="text-slate-500 hover:text-[#8b5cf6] p-1.5 rounded hover:bg-[#1c1b22] transition-colors" 
+                                  title="Search on Google"
+                                >
+                                  <Search className="w-3.5 h-3.5" />
+                                </button>
                                 <button onClick={() => openEditModal(lead)} className="text-slate-500 hover:text-white p-1.5 rounded hover:bg-[#1c1b22] transition-colors" title="Edit">
                                   <Edit3 className="w-3.5 h-3.5" />
                                 </button>
