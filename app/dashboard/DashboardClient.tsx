@@ -34,6 +34,7 @@ import {
   SlidersHorizontal,
   RotateCcw,
   Check,
+  Plus,
 } from "lucide-react";
 
 interface UserInfo {
@@ -178,6 +179,11 @@ export default function DashboardClient({ currentUser }: { currentUser: UserInfo
 
   // View modes: 'table' | 'board'
   const [viewMode, setViewMode] = useState<"table" | "board">("table");
+
+  // Add lead modal
+  const [showAddLeadModal, setShowAddLeadModal] = useState(false);
+  const [newLeadDetails, setNewLeadDetails] = useState({ name: "", phone: "", email: "", website: "", address: "", niche: "" });
+  const [isCreatingLead, setIsCreatingLead] = useState(false);
 
   // Edit lead modal
   const [editingLead, setEditingLead] = useState<Lead | null>(null);
@@ -589,6 +595,37 @@ export default function DashboardClient({ currentUser }: { currentUser: UserInfo
     } finally {
       setInlineEditingField(null);
       setInlineEditValue("");
+    }
+  };
+
+  const handleCreateManualLead = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newLeadDetails.name) return;
+
+    setIsCreatingLead(true);
+    try {
+      const res = await fetch("/api/leads/manual", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newLeadDetails),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.lead) {
+          setLeads((prev) => [data.lead, ...prev]);
+          setShowAddLeadModal(false);
+          setNewLeadDetails({ name: "", phone: "", email: "", website: "", address: "", niche: "" });
+          fetchGlobalActivity();
+        }
+      } else {
+        alert("Failed to create lead.");
+      }
+    } catch (err) {
+      console.error("Failed to create manual lead:", err);
+      alert("Failed to create lead.");
+    } finally {
+      setIsCreatingLead(false);
     }
   };
 
@@ -1455,6 +1492,17 @@ export default function DashboardClient({ currentUser }: { currentUser: UserInfo
                         {getActiveFiltersCount()}
                       </span>
                     )}
+                  </button>
+
+                  <div className="w-px h-6 bg-[#25242a]" />
+
+                  {/* Add Manual Lead Button */}
+                  <button
+                    onClick={() => setShowAddLeadModal(true)}
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-[#8b5cf6] hover:bg-[#7c3aed] text-white rounded-lg text-xs font-bold transition-all cursor-pointer shadow-sm shadow-[#8b5cf6]/20 active:scale-[0.98]"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>Add Lead</span>
                   </button>
 
                   <div className="w-px h-6 bg-[#25242a]" />
@@ -3127,6 +3175,110 @@ export default function DashboardClient({ currentUser }: { currentUser: UserInfo
               </div>
             )}
 
+          </div>
+        </div>
+      )}
+
+      {/* Manual Details Add Modal */}
+      {showAddLeadModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm animate-fade-in">
+          <div className="bg-[#141318] border border-[#25242a] rounded-xl w-full max-w-lg shadow-2xl overflow-hidden animate-slide-up">
+            <div className="p-5 border-b border-[#25242a] flex items-center justify-between bg-[#1c1b22]">
+              <h2 className="text-sm font-bold text-white flex items-center gap-2">
+                <Plus className="w-4 h-4 text-[#8b5cf6]" />
+                Add Manual Lead
+              </h2>
+              <button
+                onClick={() => setShowAddLeadModal(false)}
+                className="text-slate-500 hover:text-white transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <form onSubmit={handleCreateManualLead} className="p-6 space-y-4">
+              <div className="space-y-1">
+                <label className="text-[10px] font-extrabold text-slate-500 uppercase tracking-widest">Business Name *</label>
+                <input
+                  required
+                  type="text"
+                  value={newLeadDetails.name}
+                  onChange={(e) => setNewLeadDetails(prev => ({...prev, name: e.target.value}))}
+                  className="w-full bg-[#0c0b10] border border-[#25242a] rounded-md py-2 px-3 text-xs text-white focus:outline-none focus:border-[#8b5cf6] transition-all"
+                  placeholder="e.g. Acme Corp"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-[10px] font-extrabold text-slate-500 uppercase tracking-widest">Phone</label>
+                  <input
+                    type="text"
+                    value={newLeadDetails.phone}
+                    onChange={(e) => setNewLeadDetails(prev => ({...prev, phone: e.target.value}))}
+                    className="w-full bg-[#0c0b10] border border-[#25242a] rounded-md py-2 px-3 text-xs text-white focus:outline-none focus:border-[#8b5cf6] transition-all"
+                    placeholder="+1 234..."
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-extrabold text-slate-500 uppercase tracking-widest">Email</label>
+                  <input
+                    type="email"
+                    value={newLeadDetails.email}
+                    onChange={(e) => setNewLeadDetails(prev => ({...prev, email: e.target.value}))}
+                    className="w-full bg-[#0c0b10] border border-[#25242a] rounded-md py-2 px-3 text-xs text-white focus:outline-none focus:border-[#8b5cf6] transition-all"
+                    placeholder="contact@acme.com"
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-[10px] font-extrabold text-slate-500 uppercase tracking-widest">Website</label>
+                  <input
+                    type="text"
+                    value={newLeadDetails.website}
+                    onChange={(e) => setNewLeadDetails(prev => ({...prev, website: e.target.value}))}
+                    className="w-full bg-[#0c0b10] border border-[#25242a] rounded-md py-2 px-3 text-xs text-white focus:outline-none focus:border-[#8b5cf6] transition-all"
+                    placeholder="https://acme.com"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-extrabold text-slate-500 uppercase tracking-widest">Niche</label>
+                  <input
+                    type="text"
+                    value={newLeadDetails.niche}
+                    onChange={(e) => setNewLeadDetails(prev => ({...prev, niche: e.target.value}))}
+                    className="w-full bg-[#0c0b10] border border-[#25242a] rounded-md py-2 px-3 text-xs text-white focus:outline-none focus:border-[#8b5cf6] transition-all"
+                    placeholder="e.g. Agency"
+                  />
+                </div>
+              </div>
+              <div className="space-y-1">
+                <label className="text-[10px] font-extrabold text-slate-500 uppercase tracking-widest">Address</label>
+                <input
+                  type="text"
+                  value={newLeadDetails.address}
+                  onChange={(e) => setNewLeadDetails(prev => ({...prev, address: e.target.value}))}
+                  className="w-full bg-[#0c0b10] border border-[#25242a] rounded-md py-2 px-3 text-xs text-white focus:outline-none focus:border-[#8b5cf6] transition-all"
+                  placeholder="123 Main St..."
+                />
+              </div>
+              <div className="pt-4 flex items-center justify-end gap-3 border-t border-[#25242a]">
+                <button
+                  type="button"
+                  onClick={() => setShowAddLeadModal(false)}
+                  className="px-4 py-2 text-xs font-bold text-slate-400 hover:text-white transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isCreatingLead || !newLeadDetails.name}
+                  className="bg-[#8b5cf6] hover:bg-[#7c3aed] text-white px-5 py-2 rounded-lg text-xs font-bold shadow-sm shadow-[#8b5cf6]/20 transition-all disabled:opacity-50 disabled:pointer-events-none flex items-center gap-2"
+                >
+                  {isCreatingLead && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                  <span>Create Lead</span>
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
