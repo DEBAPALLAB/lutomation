@@ -94,7 +94,11 @@ async function main() {
         user_id TEXT REFERENCES users(id),
         comment TEXT NOT NULL,
         timestamp TEXT NOT NULL
-    );`
+    );`,
+    `CREATE INDEX IF NOT EXISTS idx_lead_activity_timestamp ON lead_activity(timestamp DESC);`,
+    `CREATE INDEX IF NOT EXISTS idx_leads_last_updated ON leads(last_updated DESC);`,
+    `CREATE INDEX IF NOT EXISTS idx_leads_niche ON leads(niche);`,
+    `CREATE INDEX IF NOT EXISTS idx_scrape_jobs_created_at ON scrape_jobs(created_at DESC);`
   ];
 
   for (const q of queries) {
