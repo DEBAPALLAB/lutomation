@@ -17,13 +17,12 @@ export async function POST(
   const userId = session.user.id;
   const { slug } = await params;
 
-  // Expecting exactly: [type, id, action] (e.g., ["node", "12345", "status"])
-  if (!slug || slug.length !== 3) {
+  if (!slug || slug.length < 2) {
     return NextResponse.json({ error: "Invalid path" }, { status: 400 });
   }
 
-  const [type, id, action] = slug;
-  const placeId = `${type}/${id}`;
+  const action = slug[slug.length - 1];
+  const placeId = slug.slice(0, -1).join("/");
   const now = new Date().toISOString();
 
   try {
@@ -270,12 +269,12 @@ export async function GET(
 
   const { slug } = await params;
 
-  if (!slug || slug.length !== 3) {
+  if (!slug || slug.length < 2) {
     return NextResponse.json({ error: "Invalid path" }, { status: 400 });
   }
 
-  const [type, id, action] = slug;
-  const placeId = `${type}/${id}`;
+  const action = slug[slug.length - 1];
+  const placeId = slug.slice(0, -1).join("/");
 
   try {
     if (action === "activity") {
